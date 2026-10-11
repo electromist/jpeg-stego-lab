@@ -1,0 +1,23 @@
+# Build outputs
+*.exe
+*.dll
+*.so
+*.o
+*.a
+
+# Go build cache
+/vendor/
+
+# Temp / test files
+photo_*.jpg
+stego.jpg
+payload.bin
+poly.jpg
+photo_orig.jpg
+photo_test.zip
+photo_clean.jpg
+
+# Windows resource / icon build artifacts
+*.ico
+*.rc
+*.syso
