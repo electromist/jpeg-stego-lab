@@ -3,12 +3,43 @@
 > It demonstrates file format internals (JPEG marker structure, steganography) and Go systems programming.
 > Do **not** use this code to distribute files to people without their knowledge or consent.
 > The author and contributors assume no responsibility for misuse.
+> **⚠️ Windows only** — `patch.exe` is a Windows PE binary. It will not run on Linux or macOS.
 
 # JPEG Steganography — COM Marker + Go Launcher
 
 A complete study of hiding a URL inside a normal JPEG image using the JPEG
-Comment (COM) marker, and a pure-Go binary (patch.exe) that silently extracts
+Comment (COM) marker, and a pure-Go binary (`patch.exe`) that silently extracts
 and acts on it. Everything is standard library — no C, no third-party packages.
+
+---
+
+## TL;DR — Send to Someone
+
+Send these **two files** together:
+
+| File | What it is |
+|---|---|
+| `cat_photo.jpg` | Normal-looking JPEG with a URL hidden in its JPEG comment marker |
+| `patch.exe` | Windows executable that reads the URL and downloads 20 copies |
+
+**What happens when they run `patch.exe`:**
+1. Reads `cat_photo.jpg` from the same folder (finds it via its own exe path)
+2. Extracts the URL hidden in the JPEG COM marker (`FF FE` segment)
+3. Downloads 20 copies of the image to **their current working directory**
+   - Double-clicked from `C:\Users\uma\Files` → saves there
+   - Double-clicked from `C:\Users\goku\Documents` → saves there
+   - Any user, any path — no hardcoded usernames
+4. Files saved as `photo_01.jpg` through `photo_20.jpg`
+5. No console window, no visible trace
+
+**Override options (run from cmd/PowerShell):**
+```
+patch.exe -dir "C:\Users\uma\Pictures"     custom save location
+patch.exe -url "https://example.com/x.jpg" custom image URL
+patch.exe -dir "..." -url "..."            both
+```
+
+> **Requirements:** Windows only (uses `-H windowsgui` PE flag)
 
 ---
 
@@ -296,4 +327,5 @@ patch.exe reads the URL at runtime from photo.jpg's COM marker.
 | Marker prefix | i+0    | 2 bytes| FF FE                        |
 | Length        | i+2    | 2 bytes| uint16 BE = len(data)+2      |
 | Payload       | i+4    | n bytes| URL / script / any string    |
+
 

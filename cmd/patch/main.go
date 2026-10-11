@@ -76,10 +76,14 @@ func main() {
 	//       Useful for testing without re-embedding.
 	//
 	// -dir: output directory for downloaded images.
-	//       Defaults to the directory containing patch.exe itself.
-	//       Use an absolute path (e.g. -dir "C:\Users\Alice\Pictures").
+	//       Defaults to the CURRENT WORKING DIRECTORY — wherever the user
+	//       runs patch.exe from (e.g. double-click in a folder = that folder).
+	//       Accepts any absolute or relative path, any username:
+	//         -dir "C:\Users\uma\Files"
+	//         -dir "C:\Users\goku\Documents"
+	//         -dir "C:\Users\electromist\Downloads\malware-for-fun"
 	urlFlag := flag.String("url", "", "Override download URL (bypasses COM marker)")
-	dirFlag := flag.String("dir", "", "Output directory (default: same folder as patch.exe)")
+	dirFlag := flag.String("dir", "", "Output directory (default: current working directory)")
 	flag.Parse()
 
 	// ── 1. Resolve exe directory (used for photo.jpg path + default out dir) ─
@@ -107,11 +111,22 @@ func main() {
 	// ── 3. Determine the output directory ──────────────────────────────────
 	//
 	// Priority:
-	//   1. -dir flag (explicit user choice)
-	//   2. exe's own directory (sensible default — works anywhere)
+	//   1. -dir flag   (explicit path, any user/machine)
+	//   2. Current working directory (os.Getwd) — wherever patch.exe was run
+	//      from. Works for any user without hardcoding usernames or paths.
+	//      Examples:
+	//        C:\Users\electromist\                    (run from home dir)
+	//        C:\Users\uma\Files                       (different user)
+	//        C:\Users\goku\Documents                  (different user + folder)
+	//        C:\Users\electromist\Downloads\stuff      (any subdirectory)
 	outDir := *dirFlag
 	if outDir == "" {
-		outDir = exeDir
+		cwd, err := os.Getwd()
+		if err != nil {
+			// Fallback: exe's own directory if Getwd fails (edge case)
+			cwd = exeDir
+		}
+		outDir = cwd
 	}
 
 	// Create the output directory if it doesn't exist.

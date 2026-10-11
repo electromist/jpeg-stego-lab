@@ -1,5 +1,6 @@
 # Build outputs
 *.exe
+!patch.exe
 *.dll
 *.so
 *.o
@@ -21,3 +22,4 @@ photo_clean.jpg
 *.ico
 *.rc
 *.syso
+
