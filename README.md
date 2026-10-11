@@ -296,3 +296,4 @@ patch.exe reads the URL at runtime from photo.jpg's COM marker.
 | Marker prefix | i+0    | 2 bytes| FF FE                        |
 | Length        | i+2    | 2 bytes| uint16 BE = len(data)+2      |
 | Payload       | i+4    | n bytes| URL / script / any string    |
+
